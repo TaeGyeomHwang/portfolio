@@ -14,20 +14,20 @@ import org.thymeleaf.util.StringUtils;
 @RequiredArgsConstructor
 @Transactional
 public class PortfolioImgService {
-    @Value("${itemImgLocation}")
+    @Value("${portfolioImgLocation}")
     private String portfolioImgLocation;
     
     private final PortfolioImgRepository portfolioImgRepository;
 
     private final FileService fileService;
 
-    public void saveItemImg(PortfolioImg portfolioImg, MultipartFile itemImgFile) throws Exception {
-        String oriImgName = itemImgFile.getOriginalFilename();
+    public void savePortfolioImg(PortfolioImg portfolioImg, MultipartFile portfolioImgFile) throws Exception {
+        String oriImgName = portfolioImgFile.getOriginalFilename();
         String imgName = "";
         String imgUrl = "";
 
         if (!StringUtils.isEmpty(oriImgName)) {
-            imgName = fileService.uploadFile(portfolioImgLocation, oriImgName, itemImgFile.getBytes());
+            imgName = fileService.uploadFile(portfolioImgLocation, oriImgName, portfolioImgFile.getBytes());
             imgUrl = "/images/portfolio/" + imgName;
         }
 
@@ -35,7 +35,7 @@ public class PortfolioImgService {
         portfolioImgRepository.save(portfolioImg);
     }
 
-    public void updateItemImg(Long portfolioImg, MultipartFile portFolioImgFile) throws Exception{
+    public void updatePortfolioImg(Long portfolioImg, MultipartFile portFolioImgFile) throws Exception{
         if(!portFolioImgFile.isEmpty()){
             PortfolioImg portfolioItemImg = portfolioImgRepository.findById(portfolioImg).orElseThrow(EntityNotFoundException::new);
 
