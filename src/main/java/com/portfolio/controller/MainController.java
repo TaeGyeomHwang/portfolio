@@ -1,6 +1,5 @@
 package com.portfolio.controller;
 
-import com.portfolio.dto.PortfolioDto;
 import com.portfolio.dto.PortfolioFormDto;
 import com.portfolio.entity.Portfolio;
 import com.portfolio.service.PortfolioService;
@@ -18,13 +17,11 @@ public class MainController {
     @GetMapping("/")
     public String index(Model model) {
         Portfolio portfolio = portfolioService.findByPortfolioStatus();
-        PortfolioFormDto portfolioFormDto = portfolioService.getPortfolioDtl(portfolio.getId());
 
         if (portfolio != null) {
+            PortfolioFormDto portfolioFormDto = portfolioService.getPortfolioDtl(portfolio.getId());
             model.addAttribute("portfolio",portfolioFormDto);
-
             portfolioService.updateExistingPortfoliosToGeneral(portfolio.getId());
-
             return "portfolio/portfolioDtl";
         } else {
             return "/main";

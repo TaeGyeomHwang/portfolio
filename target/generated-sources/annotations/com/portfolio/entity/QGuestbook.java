@@ -24,7 +24,7 @@ public class QGuestbook extends EntityPathBase<Guestbook> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
-    public final StringPath comment = createString("comment");
+    public final StringPath content = createString("content");
 
     //inherited
     public final StringPath createdBy = _super.createdBy;
@@ -38,6 +38,8 @@ public class QGuestbook extends EntityPathBase<Guestbook> {
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> regTime = _super.regTime;
+
+    public final StringPath title = createString("title");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updateTime = _super.updateTime;
