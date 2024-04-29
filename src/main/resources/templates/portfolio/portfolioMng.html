@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .carousel-inner > .item {
+            height: 350px;
+        }
+
+        .margin {
+            margin-bottom: 30px;
+        }
+
+        .banner {
+            height: 300px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .card-text {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        .center {
+            text-align: center;
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+
+    <div class="row">
+        <th:block th:each="portfolio : ${portfolios.getContent()}">
+            <div class="col-md-4 margin">
+                <div class="card">
+                    <a th:href="'/admin/portfolio/' + ${portfolio.id}" class="text-dark">
+                        <img th:src="${portfolio.imgUrl}" class="card-img-top" th:alt="${portfolio.title}" height="400">
+                        <div class="card-body">
+                            <h4 class="card-title" th:text="${portfolio.title}"></h4>
+                            <p class="card-text"
+                               th:text="'작성일: ' + ${#temporals.format(portfolio.regTime, 'yy.MM.dd HH:mm')}"></p>
+                            <p class="card-text"
+                               th:text="'수정일: ' + ${#temporals.format(portfolio.updateTime, 'yy.MM.dd HH:mm')}"></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </th:block>
+    </div>
+
+    <div th:with="start=${(portfolios.number/maxPage)*maxPage + 1}, end=(${(portfolios.totalPages == 0) ? 1 : (start + (maxPage - 1) < portfolios.totalPages ? start + (maxPage - 1) : portfolios.totalPages)})">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${portfolios.number eq 0}?'disabled':''">
+                <a th:href="@{'/admin/portfolios?page=' + ${portfolios.number - 1}}" aria-label='Previous'
+                   class="page-link">
+                    <span aria-hidden='true'>이전</span>
+                </a>
+            </li>
+
+            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}"
+                th:classappend="${portfolios.number eq page - 1}?'active':''">
+                <a th:href="@{'/admin/portfolios?page=' + ${page - 1}}" th:inline="text"
+                   class="page-link">[[${page}]]</a>
+            </li>
+
+            <li class="page-item" th:classappend="${portfolios.number+1 ge portfolios.totalPages}?'disabled':''">
+                <a th:href="@{'/admin/portfolios?page=' + ${portfolios.number+1}}" aria-label='Next' class="page-link">
+                    <span aria-hidden='true'>다음</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+
+</html>

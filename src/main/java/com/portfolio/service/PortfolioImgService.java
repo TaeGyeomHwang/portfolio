@@ -28,7 +28,7 @@ public class PortfolioImgService {
 
         if (!StringUtils.isEmpty(oriImgName)) {
             imgName = fileService.uploadFile(portfolioImgLocation, oriImgName, portfolioImgFile.getBytes());
-            imgUrl = "/images/portfolio/" + imgName;
+            imgUrl = "/images/item/" + imgName;
         }
 
         portfolioImg.updatePortfolioImg(oriImgName, imgName, imgUrl);
@@ -37,7 +37,9 @@ public class PortfolioImgService {
 
     public void updatePortfolioImg(Long portfolioImg, MultipartFile portFolioImgFile) throws Exception{
         if(!portFolioImgFile.isEmpty()){
-            PortfolioImg portfolioItemImg = portfolioImgRepository.findById(portfolioImg).orElseThrow(EntityNotFoundException::new);
+            System.out.println("portfolioImg의 id: "+portfolioImg);
+            PortfolioImg portfolioItemImg = portfolioImgRepository.findById(portfolioImg)
+                    .orElseThrow(EntityNotFoundException::new);
 
             if(!StringUtils.isEmpty(portfolioItemImg.getImgName())){
                 fileService.deleteFile(portfolioImgLocation+"/"+portfolioItemImg.getImgName());
@@ -45,8 +47,10 @@ public class PortfolioImgService {
 
             String oriImgName = portFolioImgFile.getOriginalFilename();
             String imgName = fileService.uploadFile(portfolioImgLocation, oriImgName, portFolioImgFile.getBytes());
-            String imgUrl = "/images/portfolio/" + imgName;
+            String imgUrl = "/images/item/" + imgName;
             portfolioItemImg.updatePortfolioImg(oriImgName, imgName, imgUrl);
+        }else {
+            System.out.println("portFolioImgFile이 null입니다.");
         }
     }
 }

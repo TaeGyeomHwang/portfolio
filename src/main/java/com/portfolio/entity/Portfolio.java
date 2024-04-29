@@ -1,6 +1,7 @@
 package com.portfolio.entity;
 
 import com.portfolio.constant.PortfolioStatus;
+import com.portfolio.dto.PortfolioFormDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,4 +55,16 @@ public class Portfolio extends BaseEntity{
     public Portfolio() {
         this.portfolioStatus = PortfolioStatus.GENERAL; // 기본 상태를 GENERAL로 설정
     }
+
+    public void updatePortfolio(PortfolioFormDto portfolioFormDto){
+        this.title = portfolioFormDto.getTitle();
+        this.writer = portfolioFormDto.getWriter();
+        this.phoneNumber = portfolioFormDto.getPhoneNumber();
+        this.email = portfolioFormDto.getEmail();
+        this.oneLine = portfolioFormDto.getOneLine();
+        this.techStack = portfolioFormDto.getTechStack();
+        this.projectDetail = portfolioFormDto.getProjectDetail();
+        this.portfolioStatus = portfolioFormDto.getPortfolioStatus();
+    }
+
 }
