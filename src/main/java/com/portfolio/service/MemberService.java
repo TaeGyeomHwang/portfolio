@@ -1,8 +1,11 @@
 package com.portfolio.service;
 
+import com.portfolio.dto.MemberDto;
 import com.portfolio.entity.Member;
 import com.portfolio.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,5 +45,10 @@ public class MemberService implements UserDetailsService {
                 .password(member.getPassword())
                 .roles(member.getRole().toString())
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<MemberDto> getMemberMngPage(Pageable pageable) {
+        return memberRepository.getMemberMngPage(pageable);
     }
 }

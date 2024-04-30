@@ -28,14 +28,18 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="guestbook, status: ${guestbooks.getContent()}">
-            <td th:text="${guestbook.id}"></td>
+        <tr th:each="member, status: ${members.getContent()}">
+            <td th:text="${member.nickName}"></td>
             <td>
-                <a th:href="'/guestbook/detail/' + ${guestbook.id}" th:text="${guestbook.title}"></a>
+                <span th:text="${member.role}" class="current-role"></span>
+                <select class="role-select">
+                    <option value="ROLE_USER">USER</option>
+                    <option value="ROLE_ADMIN">ADMIN</option>
+                </select>
             </td>
-            <td th:text="${guestbook.member.nickName}"></td>
-            <td th:text="${#temporals.format(guestbook.regTime, 'yy.MM.dd HH:mm')}"></td>
-            <td th:text="${#temporals.format(guestbook.updateTime, 'yy.MM.dd HH:mm')}"></td>
+            <td>
+                <button type="button" class="change-role-btn">Change Role</button>
+            </td>
         </tr>
         </tbody>
     </table>
