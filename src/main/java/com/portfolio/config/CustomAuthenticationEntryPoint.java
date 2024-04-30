@@ -16,7 +16,7 @@ public class CustomAuthenticationEntryPoint extends LoginUrlAuthenticationEntryP
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         String ajaxHeader = request.getHeader("X-Requested-With");
-        if (ajaxHeader.equals("XMLHttpRequest")) {
+        if (ajaxHeader != null && ajaxHeader.equals("XMLHttpRequest")) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Ajax Request Denied");
         } else {
             super.commence(request, response, authException);

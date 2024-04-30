@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<!-- 사용자 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        function updateGuestbook() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            var guestbookId = [[${guestbook.id}]];
+
+            var url = "/guestbook/detail/" + guestbookId;
+
+            var title = $("#title").val();
+            var content = $("#content").val();
+
+            var formData = new FormData();
+            formData.append("guestbookId", guestbookId);
+            formData.append("title", title);
+            formData.append("content", content);
+
+            $.ajax({
+                enctype: 'multipart/form-data',
+                processData: false,
+                contentType: false,
+                cache: false,
+                url: url,
+                type: "POST",
+                data: formData,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function (result, status) {
+                    alert("방명록을 수정했습니다.");
+                    location.href='/';
+                },
+                error: function (jqXHR, status, error) {
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+                }
+            });
+
+        }
+
+        function deleteGuestbook() {
+            if (confirm("정말로 삭제하시겠습니까?")) {
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+
+                var guestbookId = [[${guestbook.id}]];
+
+                $.ajax({
+                    url: '/guestbook/detail/delete/' + guestbookId,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ guestbookId: guestbookId }),
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader(header, token);
+                    },
+                    success: function(data, status) {
+                        console.log('Success:', data);
+                        location.href = '/guestbook';
+                    },
+                    error: function(jqXHR, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            }
+        }
+
+        function goToGuestbookPage() {
+            window.location.href = '/guestbook';
+        }
+    </script>
+</th:block>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .input-group {
+            margin-bottom: 15px
+        }
+
+        .fieldError {
+            color: #bd2130;
+        }
+    </style>
+</th:block>
+
+<div layout:fragment="content" style="margin-left: 25%; margin-right: 25%">
+
+    <form role="form" method="post" enctype="multipart/form-data" th:object="${guestbook}" id="guestbookForm">
+
+        <p class="h2">
+            방명록
+        </p>
+
+        <input type="hidden" th:field="*{id}">
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">제목</span>
+            </div>
+            <input type="text" th:field="*{title}" class="form-control">
+        </div>
+        <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="fieldError">Incorrect data</p>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">글쓴이</span>
+            </div>
+            <input type="text" th:field="*{member.nickName}" class="form-control" disabled>
+        </div>
+        <p th:if="${#fields.hasErrors('member.nickName')}" th:errors="*{member.nickName}" class="fieldError">Incorrect
+            data</p>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">내용</span>
+            </div>
+            <textarea class="form-control" aria-label="With textarea" th:field="*{content}"></textarea>
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">작성일</span>
+            </div>
+            <input type="text" th:field="*{regTime}" class="form-control" disabled>
+        </div>
+        <p th:if="${#fields.hasErrors('regTime')}" th:errors="*{regTime}" class="fieldError">Incorrect data</p>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text">수정일</span>
+            </div>
+            <input type="text" th:field="*{updateTime}" class="form-control" disabled>
+        </div>
+        <p th:if="${#fields.hasErrors('updateTime')}" th:errors="*{updateTime}" class="fieldError">Incorrect data</p>
+
+        <div style="text-align: center">
+            <button type="button" onclick="goToGuestbookPage()"
+                    class="btn btn-outline-secondary">방명록으로
+            </button>
+            <th:block th:if="${#authentication.getName() eq guestbook.member.nickName}">
+                <button type="button" onclick="updateGuestbook()"
+                        class="btn btn-outline-primary">수정
+                </button>
+                <button type="button" onclick="deleteGuestbook()"
+                        class="btn btn-outline-danger">삭제
+                </button>
+            </th:block>
+        </div>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+    </form>
+
+</div>
+
+</html>

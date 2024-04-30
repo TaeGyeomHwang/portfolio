@@ -39,6 +39,7 @@ public class SecurityConfig {
                     .requestMatchers(antMatcher("/")).permitAll()
                     .requestMatchers(antMatcher("/favicon.ico")).permitAll()
                     .requestMatchers(antMatcher("/members/**")).permitAll()
+                    .requestMatchers(antMatcher("/guestbook/**")).permitAll()
                     .requestMatchers(antMatcher("/images/**")).permitAll()
                     .requestMatchers("/admin/**").hasRole("ADMIN")
                     .anyRequest().authenticated();

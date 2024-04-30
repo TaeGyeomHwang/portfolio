@@ -23,12 +23,8 @@ public class Guestbook extends BaseEntity{
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public static Guestbook createGuestbook(Member member, GuestbookFormDto guestbookFormDto){
-        Guestbook guestbook = new Guestbook();
-        guestbook.setMember(member);
-        guestbook.setTitle(guestbookFormDto.getTitle());
-        guestbook.setContent(guestbookFormDto.getContent());
-
-        return guestbook;
+    public void updateGuestbook(Guestbook guestbook){
+        this.content = guestbook.getContent();
+        this.title = guestbook.getTitle();
     }
 }

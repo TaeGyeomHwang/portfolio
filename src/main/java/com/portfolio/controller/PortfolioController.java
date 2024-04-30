@@ -12,6 +12,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,7 +36,7 @@ public class PortfolioController {
     }
 
     @PostMapping(value = "/admin/portfolio/new")
-    public String itemNew(@Valid PortfolioFormDto portfolioFormDto, BindingResult bindingResult,
+    public String portfolioNew(@Valid PortfolioFormDto portfolioFormDto, BindingResult bindingResult,
                           Model model, @RequestParam("portfolioImgFile") MultipartFile portfolioImgFile) {
 
         if (bindingResult.hasErrors()) {
@@ -46,7 +49,11 @@ public class PortfolioController {
         }
 
         try {
-            portfolioService.savePortfolio(portfolioFormDto, portfolioImgFile);
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            Authentication authentication = securityContext.getAuthentication();
+            String nickName = authentication.getName();
+
+            portfolioService.savePortfolio(nickName, portfolioFormDto, portfolioImgFile);
         } catch (Exception e) {
             model.addAttribute("errorMessage", "포트폴리오 등록 중 에러가 발생하였습니다.");
             return "portfolio/portfolioForm";

@@ -2,8 +2,10 @@ package com.portfolio.service;
 
 import com.portfolio.constant.PortfolioStatus;
 import com.portfolio.dto.*;
+import com.portfolio.entity.Member;
 import com.portfolio.entity.Portfolio;
 import com.portfolio.entity.PortfolioImg;
+import com.portfolio.repository.MemberRepository;
 import com.portfolio.repository.PortfolioImgRepository;
 import com.portfolio.repository.PortfolioRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,21 +16,34 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class PortfolioService {
+
+    private final MemberRepository memberRepository;
+
     private final PortfolioRepository portfolioRepository;
 
     private final PortfolioImgService portfolioImgService;
 
     private final PortfolioImgRepository portfolioImgRepository;
 
-    public Long savePortfolio(PortfolioFormDto portfolioFormDto, MultipartFile portfolioImgFile) throws Exception {
+    @Transactional
+    public Long savePortfolio(String nickName, PortfolioFormDto portfolioFormDto, MultipartFile portfolioImgFile) throws Exception {
 
         // 포트폴리오 등록
         Portfolio portfolio = portfolioFormDto.createPortfolio();
+        Member member = memberRepository.findByNickName(nickName);
+        portfolio.setMember(member);
         portfolioRepository.save(portfolio);
+
+        // 기존 대표 포트폴리오 상태 초기화
+        if(portfolioFormDto.getPortfolioStatus()==PortfolioStatus.REPRESENTATIVE){
+            updateExistingPortfoliosToGeneral(portfolio.getId());
+        }
 
         //이미지 등록
         PortfolioImg portfolioImg = new PortfolioImg();
@@ -52,7 +67,14 @@ public class PortfolioService {
         return portfolioFormDto;
     }
 
+    @Transactional
     public Long updatePortfolio(PortfolioFormDto portfolioFormDto, MultipartFile multipartFile) throws Exception {
+
+        // 기존 대표 포트폴리오 상태 초기화
+        if(portfolioFormDto.getPortfolioStatus()==PortfolioStatus.REPRESENTATIVE){
+            updateExistingPortfoliosToGeneral(portfolioFormDto.getId());
+        }
+
         //상품 수정
         Portfolio portfolio = portfolioRepository.findById(portfolioFormDto.getId())
                 .orElseThrow(EntityNotFoundException::new);
@@ -97,5 +119,6 @@ public class PortfolioService {
     @Transactional
     public void updateExistingPortfoliosToGeneral(Long newPortfolioId) {
         portfolioRepository.updatePortfoliosToGeneralExcept(newPortfolioId);
+        System.out.println("updateExistingPortfoliosToGeneral실행");
     }
 }
